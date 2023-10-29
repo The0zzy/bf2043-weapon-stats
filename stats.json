@@ -1,0 +1,40 @@
+{
+    "weapons": [
+        {
+            "name": "G57",
+            "damageProfile": "g57",
+            "attachments": {
+                "sights": ["attachment1"],
+                "underbarrel": [],
+                "barrel": [],
+                "ammunition": ["g57_standard"]
+            }
+        }
+    ],
+    "attachments": [
+        {
+            "id": "attachment1",
+            "name": "Iron Sight",
+            "modifiers": [
+                {
+                    "modifierID": "overall_damage_multiplier",
+                    "value": "1.1"
+                },
+                {
+                    "modifierID": "ads_speed_multiplier",
+                    "value": "0.9"
+                }
+            ]
+        }
+    ],
+    "statModifiers": [
+        {
+            "id": "overall_damage_multiplier",
+            "description": "multiplies all damage values by the given value"
+        },
+        {
+            "id": "ads_speed_multiplier",
+            "description": "multiplies the default ADS speed of a weapon by the given value"
+        }
+    ]
+}

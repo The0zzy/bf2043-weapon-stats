@@ -1,0 +1,40 @@
+body {
+    background-color: #000;
+    color:aqua;
+}
+
+#mod-cross {
+    border: none;
+}
+
+#mod-cross td {
+    width: 100px;
+    height: 100px;
+}
+
+#attachment-list {
+    overflow: scroll;
+}
+
+.attachment-item {
+    background-color: gray;
+    border: 1px solid darkgray;
+    float: left;
+    width: 100px;
+    height: 100px;
+    background-image: url('http://eaassets-a.akamaihd.net/battlelog/battlebinary/gamedata/kingston/62/1d/Scope_Reflex_Fastfire-621db76f.png');
+    background-repeat: no-repeat;
+    background-size: contain;
+    cursor: pointer;
+}
+
+.attachment-cell {
+    background-color: aqua;
+    cursor: pointer;
+}
+
+.weapon-preview {
+    background-image: url('weapon_default_PP19-00f2ea5c.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+}
