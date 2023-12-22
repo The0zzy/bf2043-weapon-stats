@@ -3,6 +3,12 @@ body {
     color:aqua;
 }
 
+#weaponHeading {
+    font-size: large;
+    font-weight: bold;
+    color: aqua;
+}
+
 #mod-cross {
     border: none;
 }
@@ -34,7 +40,7 @@ body {
 }
 
 .weapon-preview {
-    background-image: url('weapon_default_PP19-00f2ea5c.png');
     background-size: contain;
     background-repeat: no-repeat;
+    transform: rotateY(180deg);
 }

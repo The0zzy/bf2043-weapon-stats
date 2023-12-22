@@ -1,34 +1,44 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <title>Weapon Stats</title>
-        <script src="index.js"></script>
-        <link rel="stylesheet" href="style.css" />
-    </head>
-    <body>
-        <div id="header">
-            <a href="#collection">COLLECTION</a>
-        </div>
-        <div id="main">
-            <table id="mod-cross">
-                <tr>
-                    <td></td>
-                    <td class="attachment-cell"></td>
-                    <td></td>
-                </tr>
-                <tr>
-                    <td class="attachment-cell"></td>
-                    <td class="weapon-preview"></td>
-                    <td class="attachment-cell"></td>
-                </tr>
-                <tr>
-                    <td></td>
-                    <td class="attachment-cell"></td>
-                    <td></td>
-                </tr>
-            </table>
-        </div>
-        <div id="attachment-list"></div>
-    </body>
-    <script>init()</script>
+  <head>
+    <title>Weapon Stats</title>
+    <script src="index.js"></script>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div id="header">
+      <span id="weaponHeading">Weapon</span>
+      <select name="weapons" id="weapons">
+        <optgroup label="Weapon Category 1">
+          <option>Weapon 1</option>
+        </optgroup>
+      </select>
+    </div>
+    <div id="main">
+      <table id="mod-cross">
+        <tr>
+          <td></td>
+          <td class="attachment-cell" id="attachment-cell-sight"></td>
+          <td></td>
+        </tr>
+        <tr>
+          <td class="attachment-cell" id="attachment-cell-barrel"></td>
+          <td class="weapon-preview" id="weapon-preview"></td>
+          <td class="attachment-cell" id="attachment-cell-ammo"></td>
+        </tr>
+        <tr>
+          <td></td>
+          <td class="attachment-cell" id="attachment-cell-underbarrel"></td>
+          <td></td>
+        </tr>
+      </table>
+    </div>
+    <div id="attachment-list"></div>
+    <div id="stats">
+      <h3>Stats</h3>
+    </div>
+  </body>
+  <script>
+    init();
+  </script>
 </html>
