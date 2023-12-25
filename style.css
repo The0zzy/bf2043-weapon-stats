@@ -18,6 +18,10 @@ body {
     height: 100px;
 }
 
+#attachment-list-specific {
+    overflow: scroll;
+}
+
 #attachment-list {
     overflow: scroll;
 }
@@ -35,7 +39,7 @@ body {
 }
 
 .attachment-cell {
-    background-color: aqua;
+    background-color: rgba(0, 247, 255, 0.5);
     cursor: pointer;
 }
 

@@ -36,6 +36,7 @@ function initWeaponCategories() {
   document.getElementById("weapons").addEventListener("change", (ev) => {
     initWeapon(ev.target.value);
   });
+  document.getElementById("weapons").dispatchEvent(new Event("change"));
 }
 
 function getAssetTagByName(name) {
@@ -63,24 +64,54 @@ function getAssetTagById(tagId) {
 function init() {
   initWeaponCategories();
   document.querySelectorAll(".attachment-cell").forEach((element) => {
-    element.addEventListener("click", showAttachments);
+    element.addEventListener("click", (ev) => {
+      showAttachments(ev.target.id);
+    });
   });
   console.log("added event listeners");
 }
 
-function showAttachments() {
-  console.log("show attachment list");
+function showAttachments(attachmentCellId) {
+  console.log("show attachment list for ", attachmentCellId);
   let attachmentList = document.querySelector("#attachment-list");
   attachmentList.innerHTML = "";
+  let attachmentListSpecific = document.querySelector(
+    "#attachment-list-specific"
+  );
+  attachmentListSpecific.innerHTML = "";
   attachments.forEach((element) => {
-    attachmentList.innerHTML += `<div class="attachment-item" id="${element.tagId}">${element.metadata.translations[0].localizedText}</div>`;
-    document.getElementById(
-      element.tagId
-    ).style.backgroundImage = `url('${getAssetTagImageUrl(element)}')`;
+    if (
+      element.metadata.translations[0].translationId.includes(
+        "_" + attachmentCellId
+      )
+    ) {
+      attachmentDiv = document.createElement("div");
+      attachmentDiv.setAttribute("class", "attachment-item");
+      attachmentDiv.setAttribute("id", element.tagId);
+      attachmentDiv.innerHTML = element.metadata.translations[0].localizedText;
+      attachmentDiv.style.backgroundImage = `url('${getAssetTagImageUrl(
+        element
+      )}')`;
+      attachmentListSpecific.appendChild(attachmentDiv);
+      document.getElementById(element.tagId);
+    }
   });
 }
 
+const weaponConfigs = [
+  {
+    id: "ak24-sorrow",
+    displayName: "Sorrows AK-24",
+    weaponId: "",
+    opticId: "",
+    barrelId: "",
+    munitionId: "",
+    underbarrelId: "",
+  },
+];
+
 let portalSettings = {};
+
 fetch("./portal-settings.json").then((response) => {
   console.log(response);
   response.json().then((parsedData) => {
