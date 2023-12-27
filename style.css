@@ -1,12 +1,12 @@
 body {
     background-color: #000;
-    color:aqua;
+    color:#25fedf;
 }
 
 #weaponHeading {
     font-size: large;
     font-weight: bold;
-    color: aqua;
+    color: rgb(37, 254, 223);
 }
 
 #mod-cross {
@@ -39,7 +39,10 @@ body {
 }
 
 .attachment-cell {
-    background-color: rgba(0, 247, 255, 0.5);
+    background-image: url('');
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-color: rgba(37, 254, 223, 1);
     cursor: pointer;
 }
 

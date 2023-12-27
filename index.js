@@ -5,7 +5,48 @@ function initWeapon(tagId) {
   document.getElementById(
     "weapon-preview"
   ).style.backgroundImage = `url('${imgurl}')`;
-  attachments = getAssetTagByName(weapon.name + " - ");
+  resetAttachments();
+  document.querySelectorAll(".attachment-cell").forEach((element) => {
+    element.addEventListener("click", (ev) => {
+      showAttachments(ev.target.id, weapon.name);
+    });
+  });
+  showWeaponStats(weapon.name);
+  showWeaponConfigs(tagId);
+}
+
+function showWeaponConfigs(weaponId) {
+  let applicableConfigs = weaponConfigs.filter(
+    (element) => weaponId == element.weaponId
+  );
+  let configSelection = document.getElementById("weaponConfigs");
+  applicableConfigs.forEach((config) => {
+    let configOption = document.createElement("option");
+    configOption.value = config.id;
+    configOption.innerHTML = config.displayName;
+    configSelection.appendChild(configOption);
+  });
+  let configOption = document.createElement("option");
+  configOption.value = "custom";
+  configOption.innerHTML = "Custom";
+  configOption.selected = true;
+  configSelection.appendChild(configOption);
+  configSelection.addEventListener("change", (e) => {
+    applyWeaponConfig(e.target.value);
+  });
+}
+
+function applyWeaponConfig(configId) {
+  let config = weaponConfigs.filter((element) => element.id == configId);
+  if (config.length == 1) {
+    config = config[0];
+    selectAttachment("OPTIC", config.opticId);
+    selectAttachment("MUNITION", config.munitionId);
+    selectAttachment("UNDERBARREL", config.underbarrelId);
+    selectAttachment("BARREL", config.barrelId);
+  } else {
+    resetAttachments();
+  }
 }
 
 function initWeaponCategories() {
@@ -39,7 +80,7 @@ function initWeaponCategories() {
   document.getElementById("weapons").dispatchEvent(new Event("change"));
 }
 
-function getAssetTagByName(name) {
+function getAssetTagsByName(name) {
   let assetTags =
     portalSettings.blueprint[0].availableGameData.assetCategories.tags;
   return assetTags.filter((element) => element.name.startsWith(name));
@@ -62,23 +103,22 @@ function getAssetTagById(tagId) {
 }
 
 function init() {
-  initWeaponCategories();
-  document.querySelectorAll(".attachment-cell").forEach((element) => {
-    element.addEventListener("click", (ev) => {
-      showAttachments(ev.target.id);
-    });
-  });
-  console.log("added event listeners");
+  if (
+    damageProfiles != null &&
+    portalSettings != null &&
+    weaponConfigs != null
+  ) {
+    initWeaponCategories();
+  }
 }
 
-function showAttachments(attachmentCellId) {
+function showAttachments(attachmentCellId, weaponName) {
   console.log("show attachment list for ", attachmentCellId);
-  let attachmentList = document.querySelector("#attachment-list");
-  attachmentList.innerHTML = "";
   let attachmentListSpecific = document.querySelector(
     "#attachment-list-specific"
   );
   attachmentListSpecific.innerHTML = "";
+  let attachments = getAssetTagsByName(weaponName + " - ");
   attachments.forEach((element) => {
     if (
       element.metadata.translations[0].translationId.includes(
@@ -92,25 +132,55 @@ function showAttachments(attachmentCellId) {
       attachmentDiv.style.backgroundImage = `url('${getAssetTagImageUrl(
         element
       )}')`;
+      attachmentDiv.addEventListener("click", (ev) => {
+        selectAttachment(attachmentCellId, ev.target.id);
+      });
       attachmentListSpecific.appendChild(attachmentDiv);
       document.getElementById(element.tagId);
     }
   });
 }
 
-const weaponConfigs = [
-  {
-    id: "ak24-sorrow",
-    displayName: "Sorrows AK-24",
-    weaponId: "",
-    opticId: "",
-    barrelId: "",
-    munitionId: "",
-    underbarrelId: "",
-  },
-];
+function selectAttachment(attachmentCellId, attachmentId) {
+  console.log(
+    "attachment selected for ",
+    attachmentCellId,
+    " => ",
+    attachmentId
+  );
+  let attachmentTag = getAssetTagById(attachmentId);
+  document.getElementById(
+    attachmentCellId
+  ).style.backgroundImage = `url('${getAssetTagImageUrl(attachmentTag)}')`;
+  document.getElementById("attachment-list-specific").innerHTML = "";
+}
 
-let portalSettings = {};
+function resetAttachments() {
+  for (const cellId of ["BARREL", "UNDERBARREL", "MUNITION", "OPTIC"]) {
+    document.getElementById(cellId).style.backgroundImage = "";
+  }
+}
+
+function showWeaponStats(weaponName) {
+  let damageProfile = damageProfiles.filter((element) =>
+    element.WeapFileName.endsWith(weaponName)
+  );
+  let stats = document.getElementById("stats");
+  stats.innerHTML = "";
+  let statsTable = document.createElement("table");
+  if (damageProfile.length == 1) {
+    for (const property in damageProfile[0]) {
+      statsTable.innerHTML += `<tr><td>${property}</td><td>${damageProfile[0][property]}</td></tr>`;
+    }
+  } else {
+    statsTable.innerHTML = "<tr><td>No data</td></tr>";
+  }
+  stats.appendChild(statsTable);
+}
+
+let weaponConfigs = null;
+let portalSettings = null;
+let damageProfiles = null;
 
 fetch("./portal-settings.json").then((response) => {
   console.log(response);
@@ -120,4 +190,21 @@ fetch("./portal-settings.json").then((response) => {
     init();
   });
 });
-console.log(portalSettings);
+
+fetch("./bf2042.json").then((response) => {
+  console.log(response);
+  response.json().then((parsedData) => {
+    damageProfiles = parsedData;
+    console.log(damageProfiles);
+    init();
+  });
+});
+
+fetch("./weaponConfigs.json").then((response) => {
+  console.log(response);
+  response.json().then((parsedData) => {
+    weaponConfigs = parsedData;
+    console.log(weaponConfigs);
+    init();
+  });
+});
