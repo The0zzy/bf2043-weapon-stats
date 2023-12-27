@@ -20,6 +20,7 @@ function showWeaponConfigs(weaponId) {
     (element) => weaponId == element.weaponId
   );
   let configSelection = document.getElementById("weaponConfigs");
+  configSelection.innerHTML = "";
   applicableConfigs.forEach((config) => {
     let configOption = document.createElement("option");
     configOption.value = config.id;
@@ -159,6 +160,7 @@ function resetAttachments() {
   for (const cellId of ["BARREL", "UNDERBARREL", "MUNITION", "OPTIC"]) {
     document.getElementById(cellId).style.backgroundImage = "";
   }
+  document.getElementById("attachment-list-specific").innerHTML = "";
 }
 
 function showWeaponStats(weaponName) {
