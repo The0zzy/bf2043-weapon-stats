@@ -70,23 +70,24 @@ function initWeaponCategories() {
           console.log("Weapon", assetTag.childrenTags[index], weapon);
           if (weapon && weapon.metadata && !weapon.childrenTags) {
             let weaponTranslation = weapon.metadata.translations.filter(
-              (element) =>
-                element.kind == "8" &&
-                !element.translationId.startsWith("ID_MICA_ABILITY") &&
-                !element.translationId.startsWith("ID_ABILITY_MICA")
+              (element) => element.kind == "8"
+              // &&
+              // !element.translationId.startsWith("ID_MICA_ABILITY") &&
+              // !element.translationId.startsWith("ID_ABILITY_MICA")
             );
-            if (
-              weaponTranslation.length == 1 &&
-              !weaponTranslation[0].translationId.startsWith(
-                "ID_MICA_ABILITY"
-              ) &&
-              !weaponTranslation[0].translationId.startsWith("ID_ABILITY_MICA")
-            ) {
-              let option = document.createElement("option");
-              option.setAttribute("value", assetTag.childrenTags[index]);
-              option.innerHTML = weapon.metadata.translations[0].localizedText;
-              optGroup.appendChild(option);
-            }
+            // if (
+            //   weaponTranslation.length == 1
+            // ) {
+            let option = document.createElement("option");
+            option.setAttribute("value", assetTag.childrenTags[index]);
+            option.innerHTML = weaponTranslation[0].localizedText;
+            optGroup.appendChild(option);
+            weaponAssetTags.push({
+              name: weapon.name,
+              tagId: weapon.tagId,
+              displayName: weaponTranslation[0].localizedText,
+            });
+            // }
           }
         }
         if (optGroup.childElementCount > 0) {
@@ -99,6 +100,29 @@ function initWeaponCategories() {
     initWeapon(ev.target.value);
   });
   document.getElementById("weapons").dispatchEvent(new Event("change"));
+
+  fetch("./scribbles_6_2_0.json").then((response) => {
+    console.log(response);
+    response.json().then((parsedData) => {
+      scribblesData = parsedData;
+      console.log(scribblesData);
+      for (const category in scribblesData) {
+        console.log("Category", category);
+        for (const weapon of scribblesData[category]) {
+          let weaponTags = weaponAssetTags.filter(
+            (element) =>
+              element.name == weapon.name || element.displayName == weapon.name
+          );
+          weaponTags.forEach((element) => {
+            console.log(weapon.name, "=>", element);
+          });
+          if (weaponTags.length == 0) {
+            console.log("Found no matching asset for weapon", weapon);
+          }
+        }
+      }
+    });
+  });
 }
 
 function getAssetTagsByName(name) {
@@ -234,9 +258,11 @@ function showWeaponStats(weaponName) {
   stats.appendChild(statsTable);
 }
 
+let weaponAssetTags = [];
 let weaponConfigs = null;
 let portalSettings = null;
 let damageProfiles = null;
+let scribblesData = null;
 
 fetch("./portal-settings.json").then((response) => {
   console.log(response);
