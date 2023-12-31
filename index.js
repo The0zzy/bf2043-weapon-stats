@@ -61,16 +61,36 @@ function initWeaponCategories() {
     if (assetTag.metadata) {
       let weaponCategory = assetTag.metadata.translations[0].localizedText;
       console.log("Weapon Category", childTag, weaponCategory);
-      document.getElementById(
-        "weapons"
-      ).innerHTML += `<optgroup id="${childTag}" label="${weaponCategory}"></optgroup>`;
-      for (let index = 0; index < assetTag.childrenTags.length; index++) {
-        let weapon = getAssetTagById(assetTag.childrenTags[index]);
-        console.log("Weapon", assetTag.childrenTags[index], weapon);
-        if (weapon && weapon.metadata && !weapon.childrenTags) {
-          document.getElementById(
-            assetTag.tagId
-          ).innerHTML += `<option value="${assetTag.childrenTags[index]}">${weapon.metadata.translations[0].localizedText}</option>`;
+      if (assetTag.childrenTags) {
+        let optGroup = document.createElement("optgroup");
+        optGroup.setAttribute("id", childTag);
+        optGroup.setAttribute("label", weaponCategory);
+        for (let index = 0; index < assetTag.childrenTags.length; index++) {
+          let weapon = getAssetTagById(assetTag.childrenTags[index]);
+          console.log("Weapon", assetTag.childrenTags[index], weapon);
+          if (weapon && weapon.metadata && !weapon.childrenTags) {
+            let weaponTranslation = weapon.metadata.translations.filter(
+              (element) =>
+                element.kind == "8" &&
+                !element.translationId.startsWith("ID_MICA_ABILITY") &&
+                !element.translationId.startsWith("ID_ABILITY_MICA")
+            );
+            if (
+              weaponTranslation.length == 1 &&
+              !weaponTranslation[0].translationId.startsWith(
+                "ID_MICA_ABILITY"
+              ) &&
+              !weaponTranslation[0].translationId.startsWith("ID_ABILITY_MICA")
+            ) {
+              let option = document.createElement("option");
+              option.setAttribute("value", assetTag.childrenTags[index]);
+              option.innerHTML = weapon.metadata.translations[0].localizedText;
+              optGroup.appendChild(option);
+            }
+          }
+        }
+        if (optGroup.childElementCount > 0) {
+          document.getElementById("weapons").appendChild(optGroup);
         }
       }
     }
@@ -90,7 +110,10 @@ function getAssetTagsByName(name) {
 function getAssetTagImageUrl(assetTag) {
   if (assetTag.metadata.resources) {
     let imgurl = assetTag.metadata.resources.find(
-      (element) => element.kind == "image" || element.kind == "webImage"
+      (element) =>
+        element.kind == "image" ||
+        element.kind == "webImage" ||
+        element.kind == "svgImage"
     ).location.url;
     return imgurl;
   }
@@ -110,7 +133,38 @@ function init() {
     weaponConfigs != null
   ) {
     initWeaponCategories();
+
+    // let era2042 = portalSettings.blueprint[0].availableGameData.assetCategories.tags.filter(
+    //   (element) => element.name == "2042"
+    // );
+    // expandTags();
   }
+}
+
+function expandTags() {
+  portalSettings.blueprint[0].availableGameData.assetCategories.rootTags.forEach(
+    (tag) => expandChildTags(tag)
+  );
+}
+
+function expandChildTags(inputObject) {
+  if (inputObject.childrenTags && !inputObject.childTags) {
+    inputObject.childTags = [];
+    inputObject.childrenTags.forEach((element) => {
+      inputObject.childTags.push(
+        ...portalSettings.blueprint[0].availableGameData.assetCategories.tags.filter(
+          (tag) => tag.tagId == element
+        )
+      );
+      inputObject.childTags.push(
+        ...portalSettings.blueprint[0].availableGameData.assetCategories.rootTags.filter(
+          (tag) => tag.tagId == element
+        )
+      );
+    });
+    inputObject.childTags.forEach((childTag) => expandChildTags(childTag));
+  }
+  return inputObject;
 }
 
 function showAttachments(attachmentCellId, weaponName) {
